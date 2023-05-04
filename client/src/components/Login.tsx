@@ -5,6 +5,7 @@ import { decodeToken } from "react-jwt";
 export default function Login() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const [user, setUser] = useState<any | null>(null);
 
@@ -22,7 +23,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (username && password) {
-      await fetch("http://localhost:4000/login", {
+      const data = await fetch("http://localhost:4000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,7 +35,13 @@ export default function Login() {
         }),
       });
 
-      setAuth();
+      const res = await data.json();
+
+      if (data.ok) {
+        setAuth();
+      } else {
+        setError(res);
+      }
     }
   };
 
@@ -49,7 +56,7 @@ export default function Login() {
   return (
     <div>
       {!user && (
-        <>
+        <div className="flex flex-col justify-center items-center gap-1">
           <label>Username:</label>
           <input
             onChange={handleInputChange}
@@ -64,10 +71,11 @@ export default function Login() {
             type="password"
             value={password}
           />
+          {error && <span>{JSON.stringify(error)}</span>}
           <button type="submit" onClick={handleLogin}>
             Login
           </button>
-        </>
+        </div>
       )}
 
       {user && (
