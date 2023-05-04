@@ -83,8 +83,8 @@ app.post("/login", async (req, res) => {
       );
 
       res.cookie("jwt", token, {
-        httpOnly: true,
-        secure: true,
+        // httpOnly: true,
+        // secure: true,
       });
 
       res.status(200).json({ token });

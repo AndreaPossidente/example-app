@@ -16,6 +16,7 @@ export function authMiddleware(
   if (token) {
     jwt.verify(token, SECRET, (err: any, decoded: any) => {
       if (err) {
+        res.clearCookie("jwt");
         res.status(401).json({ message: "Unauthorized" });
       } else {
         // @ts-ignore

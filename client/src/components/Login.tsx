@@ -1,12 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { decodeToken } from "react-jwt";
 
 export default function Login() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
+  const [user, setUser] = useState<any | null>(null);
+
+  const setAuth = async () => {
+    const token = Cookies.get("jwt");
+    if (token) {
+      const user: any = decodeToken(token);
+      setUser(user);
+    }
+  };
+
+  useEffect(() => {
+    setAuth();
+  }, []);
+
   const handleLogin = async () => {
     if (username && password) {
-      const data = await fetch("http://localhost:4000/login", {
+      await fetch("http://localhost:4000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -18,9 +34,7 @@ export default function Login() {
         }),
       });
 
-      const res = await data.json();
-
-      console.log(res);
+      setAuth();
     }
   };
 
@@ -34,23 +48,38 @@ export default function Login() {
 
   return (
     <div>
-      <label>Username:</label>
-      <input
-        onChange={handleInputChange}
-        name="username"
-        value={username}
-        type="text"
-      />
-      <label>Password:</label>
-      <input
-        name="password"
-        onChange={handleInputChange}
-        type="password"
-        value={password}
-      />
-      <button type="submit" onClick={handleLogin}>
-        Login
-      </button>
+      {!user && (
+        <>
+          <label>Username:</label>
+          <input
+            onChange={handleInputChange}
+            name="username"
+            value={username}
+            type="text"
+          />
+          <label>Password:</label>
+          <input
+            name="password"
+            onChange={handleInputChange}
+            type="password"
+            value={password}
+          />
+          <button type="submit" onClick={handleLogin}>
+            Login
+          </button>
+        </>
+      )}
+
+      {user && (
+        <button
+          onClick={() => {
+            Cookies.remove("jwt");
+            setUser(null);
+          }}
+        >
+          Logout
+        </button>
+      )}
     </div>
   );
 }
