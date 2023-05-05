@@ -1,57 +1,20 @@
-import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import { decodeToken } from "react-jwt";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+import useInput from "../hooks/useInput";
 
 export default function Login() {
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string>("");
-
-  const [user, setUser] = useState<any | null>(null);
-
-  const setAuth = async () => {
-    const token = Cookies.get("jwt");
-    if (token) {
-      const user: any = decodeToken(token);
-      setUser(user);
-    }
-  };
+  const { login, error, user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setAuth();
-  }, []);
-
-  const handleLogin = async () => {
-    if (username && password) {
-      const data = await fetch("http://localhost:4000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          username: username,
-          password: password,
-        }),
-      });
-
-      const res = await data.json();
-
-      if (data.ok) {
-        setAuth();
-      } else {
-        setError(res);
-      }
+    if (user) {
+      navigate("/");
     }
-  };
+  }, [user, navigate]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.type === "password") {
-      setPassword(e.target.value);
-    } else {
-      setUsername(e.target.value);
-    }
-  };
+  const { data: username, handler: handleUsername } = useInput();
+  const { data: password, handler: handlePassword } = useInput();
 
   return (
     <div>
@@ -59,34 +22,23 @@ export default function Login() {
         <div className="flex flex-col justify-center items-center gap-1">
           <label>Username:</label>
           <input
-            onChange={handleInputChange}
             name="username"
-            value={username}
             type="text"
+            value={username}
+            onChange={handleUsername}
           />
           <label>Password:</label>
           <input
             name="password"
-            onChange={handleInputChange}
             type="password"
+            onChange={handlePassword}
             value={password}
           />
           {error && <span>{JSON.stringify(error)}</span>}
-          <button type="submit" onClick={handleLogin}>
+          <button type="submit" onClick={() => login(username, password)}>
             Login
           </button>
         </div>
-      )}
-
-      {user && (
-        <button
-          onClick={() => {
-            Cookies.remove("jwt");
-            setUser(null);
-          }}
-        >
-          Logout
-        </button>
       )}
     </div>
   );
