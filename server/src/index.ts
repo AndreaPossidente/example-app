@@ -30,7 +30,7 @@ app.use(express.json())
 app.use(morgan("dev"))
 
 interface User {
-  userId: number;
+  userId: string;
   username: string;
   role: string;
   permissions: string[];

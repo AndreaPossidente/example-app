@@ -10,6 +10,9 @@
     "singleAttributePerLine": false,
     "printWidth": 200
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "scripts": {
     "prisma:generate": "npx prisma generate",
     "prisma:push": "npx prisma db push",
