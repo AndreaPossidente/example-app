@@ -45,20 +45,40 @@ app.get("/users", authMiddleware, async (req, res) => {
 app.post("/signup", async (req, res) => {
   const { username, password } = req.body;
 
+  if (!username || !password) {
+    res.status(400).json({ msg: "Must insert username and password" });
+    return;
+  }
+
   const hashedPassword = CryptoJS.AES.encrypt(password, SECRET).toString();
 
-  await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       username: username,
       password: hashedPassword,
     },
   });
+  const token = jwt.sign(
+    {
+      userId: user.id,
+      username: user.username,
+    },
+    SECRET
+  );
+  res.cookie("jwt", token, {
+    // httpOnly: true,
+    // secure: true,
+  });
 
-  res.status(200).json({ msg: "user created" });
+  res.status(200).json({ msg: "user created", token });
 });
 
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
+  if (!username || !password) {
+    res.status(400).json({ msg: "Must insert username and password" });
+    return;
+  }
 
   const user = await prisma.user.findFirst({
     where: {

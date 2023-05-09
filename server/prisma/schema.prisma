@@ -11,7 +11,23 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  username String
-  password String
+  id          Int          @id @default(autoincrement())
+  username    String
+  password    String
+  role        Role         @default(USER)
+  permissions Permission[] @default([CAN_READ_PERSONAL_PROFILE, CAN_UPDATE_PERSONAL_PROFILE])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Permission {
+  CAN_DELETE
+  CAN_INSERT
+  CAN_UPDATE
+  CAN_READ_PERSONAL_PROFILE
+  CAN_UPDATE_PERSONAL_PROFILE
+  CAN_FETCH
 }
