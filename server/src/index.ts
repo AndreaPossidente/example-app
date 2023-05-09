@@ -248,8 +248,6 @@ app.post("/login", async (req, res) => {
   if (user) {
     const pass = CryptoJS.AES.decrypt(user.password, SECRET).toString(CryptoJS.enc.Utf8)
 
-    console.log(pass)
-
     if (password === pass) {
       const token = jwt.sign(
         {

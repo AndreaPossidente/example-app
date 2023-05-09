@@ -13,8 +13,6 @@ async function main() {
       permissions: ["CAN_DELETE", "CAN_FETCH", "CAN_INSERT", "CAN_READ_PERSONAL_PROFILE", "CAN_UPDATE", "CAN_UPDATE_PERSONAL_PROFILE"],
     },
   })
-
-  console.log(admin)
 }
 main()
   .then(async () => {
