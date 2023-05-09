@@ -27,16 +27,17 @@ export default function useAuth() {
 
   const login = async (username: string, password: string) => {
     if (username && password) {
-      const res = await axios
+      const data = await axios
         .post("/login", {
           username: username,
           password: password,
         })
+        .then((res) => res.data)
         .catch((error) => {
           setError(error.response.data.msg);
         });
 
-      if (res.data["token"]) {
+      if (data["token"]) {
         const token = Cookies.get("jwt");
         if (token) {
           const user: Session | null = decodeToken(token);
@@ -45,7 +46,7 @@ export default function useAuth() {
           }
         }
       } else {
-        setError(JSON.stringify(res));
+        setError(JSON.stringify(data));
         setUser(null);
       }
     }
@@ -53,16 +54,17 @@ export default function useAuth() {
 
   const signup = async (username: string, password: string) => {
     if (username && password) {
-      const res = await axios
+      const data = await axios
         .post("/signup", {
           username: username,
           password: password,
         })
+        .then((res) => res.data)
         .catch((error) => {
           setError(error.response.data.msg);
         });
 
-      if (res.data["token"]) {
+      if (data["token"]) {
         const token = Cookies.get("jwt");
         if (token) {
           const user: Session | null = decodeToken(token);
@@ -71,7 +73,7 @@ export default function useAuth() {
           }
         }
       } else {
-        setError(JSON.stringify(res));
+        setError(JSON.stringify(data));
         setUser(null);
       }
     }
