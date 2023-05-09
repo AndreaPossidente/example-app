@@ -1,0 +1,9 @@
+table.users-table {
+  @apply border rounded-lg text-sm;
+  & tr > td {
+    @apply p-1;
+  }
+  & > thead {
+    @apply bg-zinc-100 font-bold text-zinc-600;
+  }
+}

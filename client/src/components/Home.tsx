@@ -2,14 +2,7 @@ import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-
-interface User {
-  id: number;
-  username: string;
-  password: string;
-  role: string;
-  permissions: string[];
-}
+import UsersTable from "./UsersTable/UsersTable";
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -34,6 +27,12 @@ export default function Home() {
     setUsers(data);
   };
 
+  const updateUsers = async (data: User[]) => {
+    if (data) {
+      setUsers(data);
+    }
+  };
+
   useEffect(() => {
     if (user?.role === "ADMIN") {
       getUsers();
@@ -43,23 +42,25 @@ export default function Home() {
   return (
     <div>
       {!user && (
-        <div className="h-screen w-full flex gap-3 justify-center items-center">
-          <Link to="/login">Login</Link> or <Link to="/signup">Sign Up</Link>
+        <div className="h-screen w-full flex gap-2 justify-center items-center">
+          <Link to="/login" className="font-bold text-blue-800">
+            Login
+          </Link>
+          or
+          <Link to="/signup" className="font-bold text-blue-800">
+            Sign Up
+          </Link>
         </div>
       )}
       {user && (
         <div className="h-screen w-full flex flex-col gap-5 justify-center items-center">
-          <div>Logged in as {user.username}</div>
           <div>
-            You are a {user.role} and can {JSON.stringify(user.permissions)}
+            Logged in as <b>{user.username}</b>
+            <span className="text-xs pl-1">{user.role}</span>
           </div>
           <div>
-            {users &&
-              users.map((user) => (
-                <div>
-                  {user.username} - {user.role}
-                </div>
-              ))}
+            <h2 className="text-lg font-bold mb-2">Manage Users</h2>
+            {users && <UsersTable updateUsers={updateUsers} users={users} />}
           </div>
           <button onClick={logout}>Logout</button>
         </div>
