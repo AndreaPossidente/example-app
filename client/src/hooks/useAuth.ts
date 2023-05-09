@@ -5,6 +5,8 @@ import { decodeToken } from "react-jwt";
 interface Session {
   userId: number;
   username: string;
+  role: string;
+  permissions: string[];
   iat: number;
 }
 
