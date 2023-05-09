@@ -27,10 +27,14 @@ export default function useAuth() {
 
   const login = async (username: string, password: string) => {
     if (username && password) {
-      const res = await axios.post("/login", {
-        username: username,
-        password: password,
-      });
+      const res = await axios
+        .post("/login", {
+          username: username,
+          password: password,
+        })
+        .catch((error) => {
+          setError(error.response.data.msg);
+        });
 
       if (res.data["token"]) {
         const token = Cookies.get("jwt");
@@ -41,7 +45,7 @@ export default function useAuth() {
           }
         }
       } else {
-        setError(res.data.msg);
+        setError(JSON.stringify(res));
         setUser(null);
       }
     }
@@ -49,10 +53,14 @@ export default function useAuth() {
 
   const signup = async (username: string, password: string) => {
     if (username && password) {
-      const res = await axios.post("/signup", {
-        username: username,
-        password: password,
-      });
+      const res = await axios
+        .post("/signup", {
+          username: username,
+          password: password,
+        })
+        .catch((error) => {
+          setError(error.response.data.msg);
+        });
 
       if (res.data["token"]) {
         const token = Cookies.get("jwt");
@@ -63,7 +71,7 @@ export default function useAuth() {
           }
         }
       } else {
-        setError(res.data.msg);
+        setError(JSON.stringify(res));
         setUser(null);
       }
     }
