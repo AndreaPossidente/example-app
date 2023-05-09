@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
+ "prettier": {
+    "tabWidth": 2,
+    "semi": false,
+    "parser": "babel-flow",
+    "singleAttributePerLine": false,
+    "printWidth": 200
+  },
   "scripts": {
     "prisma:generate": "npx prisma generate",
     "prisma:push": "npx prisma db push",
