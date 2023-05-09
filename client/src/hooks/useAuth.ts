@@ -23,12 +23,57 @@ export default function useAuth() {
   }, []);
 
   const login = async (username: string, password: string) => {
+    const token = Cookies.get("jwt");
+    const headers: { authorization?: string; "Content-Type": string } = token
+      ? {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        }
+      : {
+          "Content-Type": "application/json",
+        };
     if (username && password) {
       const res = await fetch("http://localhost:4000/login", {
         method: "POST",
-        headers: {
+        headers,
+        credentials: "include",
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data["token"]) {
+        const token = Cookies.get("jwt");
+        if (token) {
+          const user: Session | null = decodeToken(token);
+          if (user) {
+            setUser(user);
+          }
+        }
+      } else {
+        setError(data.message);
+        setUser(null);
+      }
+    }
+  };
+
+  const signup = async (username: string, password: string) => {
+    const token = Cookies.get("jwt");
+    const headers: { authorization?: string; "Content-Type": string } = token
+      ? {
           "Content-Type": "application/json",
-        },
+          authorization: `Bearer ${token}`,
+        }
+      : {
+          "Content-Type": "application/json",
+        };
+    if (username && password) {
+      const res = await fetch("http://localhost:4000/signup", {
+        method: "POST",
+        headers,
         credentials: "include",
         body: JSON.stringify({
           username: username,
@@ -58,5 +103,5 @@ export default function useAuth() {
     setUser(null);
   };
 
-  return { user, error, login, logout };
+  return { user, error, login, signup, logout };
 }
