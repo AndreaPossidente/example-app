@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import useInput from "../hooks/useInput";
 
-export default function Login() {
-  const { login, error, user } = useAuth();
+export default function SignUp() {
+  const { signup, error, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function Login() {
     <div className="flex justify-center items-center w-full h-screen">
       {!user && (
         <div className="flex flex-col justify-center items-center gap-1">
-          <h1>Accedi</h1>
+          <h1>Registrati</h1>
           <label>Username:</label>
           <input
             name="username"
@@ -36,12 +36,12 @@ export default function Login() {
             value={password}
           />
           {error && <span>{JSON.stringify(error)}</span>}
-          <button type="submit" onClick={() => login(username, password)}>
-            Login
+          <button type="submit" onClick={() => signup(username, password)}>
+            Sign Up
           </button>
 
           <span>
-            Don't have an account yet? <Link to="/signup">Sign Up</Link>
+            Already have an account? <Link to="/login">Login</Link>
           </span>
         </div>
       )}
