@@ -35,7 +35,7 @@ export default function SignUp() {
             onChange={handlePassword}
             value={password}
           />
-          {error && <span>{JSON.stringify(error)}</span>}
+          {error && <div>{error}</div>}
           <button type="submit" onClick={() => signup(username, password)}>
             Sign Up
           </button>

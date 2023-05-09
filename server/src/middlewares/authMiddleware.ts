@@ -13,7 +13,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     jwt.verify(token, SECRET, (err: any, decoded: any) => {
       if (err) {
         res.clearCookie("jwt")
-        res.status(401).json({ message: "Unauthorized" })
+        res.status(401).json({ msg: "Unauthorized" })
       } else {
         // @ts-ignore
         req.user = decoded
@@ -21,6 +21,6 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
       }
     })
   } else {
-    res.status(401).json({ message: "Unauthorized" })
+    res.status(401).json({ msg: "Unauthorized" })
   }
 }

@@ -56,7 +56,7 @@ export default function useAuth() {
           }
         }
       } else {
-        setError(data.message);
+        setError(data.msg);
         setUser(null);
       }
     }
@@ -94,7 +94,7 @@ export default function useAuth() {
           }
         }
       } else {
-        setError(data.message);
+        setError(data.msg);
         setUser(null);
       }
     }

@@ -35,7 +35,7 @@ export default function Login() {
             onChange={handlePassword}
             value={password}
           />
-          {error && <span>{JSON.stringify(error)}</span>}
+          {error && <div>{error}</div>}
           <button type="submit" onClick={() => login(username, password)}>
             Login
           </button>

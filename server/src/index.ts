@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser"
 import jwt from "jsonwebtoken"
 import CryptoJS from "crypto-js"
 
-import { PrismaClient } from "@prisma/client"
+import { Prisma, PrismaClient } from "@prisma/client"
 import { authMiddleware } from "./middlewares/authMiddleware.js"
 
 const prisma = new PrismaClient()
@@ -86,17 +86,23 @@ app.post("/users", authMiddleware, async (req, res) => {
     })
     return
   }
-
-  const usr = await prisma.user.create({
-    data: {
-      username,
-      password,
-      role: roleInsert,
-      permissions: permissionsInsert,
-    },
-  }) // SELECT * FROM users
-
-  res.status(200).json(usr)
+  try {
+    const usr = await prisma.user.create({
+      data: {
+        username,
+        password,
+        role: roleInsert,
+        permissions: permissionsInsert,
+      },
+    }) // SELECT * FROM users
+    res.status(200).json
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        res.status(400).json({ msg: "There is a unique constraint violation, a new user cannot be created with this username" })
+      }
+    }
+  }
 })
 
 app.put("/users", authMiddleware, async (req, res) => {
@@ -190,30 +196,38 @@ app.post("/signup", async (req, res) => {
   /* eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoibWF0dGVvIiwicm9sZSI6IlVTRVIiLCJwZXJtaXNzaW9ucyI6WyJDQU5fUkVBRF9QRVJTT05BTF9QUk9GSUxFIiwiQ0FOX1VQREFURV9QRVJTT05BTF9QUk9GSUxFIl0sImlhdCI6MTY4MzY0NTU1N30.5ntHNeMBZ8coPqbQIYTwni6vEqrJagUdel0lHe3eN9I */
   const hashedPassword = CryptoJS.AES.encrypt(password, SECRET).toString()
 
-  const user = await prisma.user.create({
-    data: {
-      username: username,
-      password: hashedPassword,
-    },
-  })
-  const token = jwt.sign(
-    {
-      userId: user.id,
-      username: user.username,
-      role: user.role,
-      permissions: user.permissions,
-    },
-    SECRET
-  )
-  res.cookie("jwt", token, {
-    // httpOnly: true,
-    // secure: true,
-  })
+  try {
+    const user = await prisma.user.create({
+      data: {
+        username: username,
+        password: hashedPassword,
+      },
+    })
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        username: user.username,
+        role: user.role,
+        permissions: user.permissions,
+      },
+      SECRET
+    )
+    res.cookie("jwt", token, {
+      // httpOnly: true,
+      // secure: true,
+    })
 
-  res.status(200).json({
-    msg: "user created",
-    token,
-  })
+    res.status(200).json({
+      msg: "user created",
+      token,
+    })
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        res.status(400).json({ msg: "There is a unique constraint violation, a new user cannot be created with this username" })
+      }
+    }
+  }
 })
 
 app.post("/login", async (req, res) => {
@@ -257,12 +271,12 @@ app.post("/login", async (req, res) => {
       })
     } else {
       res.status(401).json({
-        message: "Unauthorized wrong password",
+        msg: "Unauthorized wrong password",
       })
     }
   } else {
     res.status(401).json({
-      message: "Unauthorized wrong username",
+      msg: "Unauthorized wrong username",
     })
   }
 })
