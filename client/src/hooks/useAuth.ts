@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { decodeToken } from "react-jwt";
+import axios from "../api/axios";
 
 interface Session {
   userId: number;
@@ -25,29 +26,13 @@ export default function useAuth() {
   }, []);
 
   const login = async (username: string, password: string) => {
-    const token = Cookies.get("jwt");
-    const headers: { authorization?: string; "Content-Type": string } = token
-      ? {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${token}`,
-        }
-      : {
-          "Content-Type": "application/json",
-        };
     if (username && password) {
-      const res = await fetch("http://localhost:4000/login", {
-        method: "POST",
-        headers,
-        credentials: "include",
-        body: JSON.stringify({
-          username: username,
-          password: password,
-        }),
+      const res = await axios.post("/login", {
+        username: username,
+        password: password,
       });
 
-      const data = await res.json();
-
-      if (data["token"]) {
+      if (res.data["token"]) {
         const token = Cookies.get("jwt");
         if (token) {
           const user: Session | null = decodeToken(token);
@@ -56,36 +41,20 @@ export default function useAuth() {
           }
         }
       } else {
-        setError(data.msg);
+        setError(res.data.msg);
         setUser(null);
       }
     }
   };
 
   const signup = async (username: string, password: string) => {
-    const token = Cookies.get("jwt");
-    const headers: { authorization?: string; "Content-Type": string } = token
-      ? {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${token}`,
-        }
-      : {
-          "Content-Type": "application/json",
-        };
     if (username && password) {
-      const res = await fetch("http://localhost:4000/signup", {
-        method: "POST",
-        headers,
-        credentials: "include",
-        body: JSON.stringify({
-          username: username,
-          password: password,
-        }),
+      const res = await axios.post("/signup", {
+        username: username,
+        password: password,
       });
 
-      const data = await res.json();
-
-      if (data["token"]) {
+      if (res.data["token"]) {
         const token = Cookies.get("jwt");
         if (token) {
           const user: Session | null = decodeToken(token);
@@ -94,7 +63,7 @@ export default function useAuth() {
           }
         }
       } else {
-        setError(data.msg);
+        setError(res.data.msg);
         setUser(null);
       }
     }

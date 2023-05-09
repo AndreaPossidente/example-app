@@ -1,29 +1,15 @@
 import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import UsersTable from "./UsersTable/UsersTable";
+import axios from "../api/axios";
 
 export default function Home() {
   const { user, logout } = useAuth();
   const [users, setUsers] = useState<User[] | null>(null);
 
-  const token = Cookies.get("jwt");
-  const headers: { authorization?: string; "Content-Type": string } = token
-    ? {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${token}`,
-      }
-    : {
-        "Content-Type": "application/json",
-      };
-
   const getUsers = async () => {
-    const res = await fetch("http://localhost:4000/users", {
-      headers,
-    });
-    const data = await res.json();
-
+    const { data } = await axios.get("/users");
     setUsers(data);
   };
 
@@ -58,10 +44,17 @@ export default function Home() {
             Logged in as <b>{user.username}</b>
             <span className="text-xs pl-1">{user.role}</span>
           </div>
-          <div>
-            <h2 className="text-lg font-bold mb-2">Manage Users</h2>
-            {users && <UsersTable updateUsers={updateUsers} users={users} />}
-          </div>
+          {users && (
+            <div>
+              <div className="flex gap-2 justify-between items-center">
+                <h2 className="text-lg font-bold mb-2">Manage Users</h2>
+                <span className="text-xs font-bold text-blue-800 cursor-pointer">
+                  Add User
+                </span>
+              </div>
+              <UsersTable updateUsers={updateUsers} users={users} />
+            </div>
+          )}
           <button onClick={logout}>Logout</button>
         </div>
       )}

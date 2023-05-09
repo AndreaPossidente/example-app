@@ -2,7 +2,7 @@ import "./UsersTable.scss";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline } from "react-icons/md";
 import useAuth from "../../hooks/useAuth";
-import Cookies from "js-cookie";
+import axios from "../../api/axios";
 
 export default function UsersTable({
   users,
@@ -14,15 +14,8 @@ export default function UsersTable({
   const { user: usr } = useAuth();
 
   const deleteUser = async (username: string) => {
-    const token = Cookies.get("jwt");
-    await fetch("http://localhost:4000/users", {
-      method: "DELETE",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ username }),
+    await axios.delete("/users", {
+      data: { username },
     });
     if (users) {
       updateUsers(users.filter((user) => user.username !== username));
