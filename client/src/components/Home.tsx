@@ -9,7 +9,7 @@ export default function Home() {
   const [users, setUsers] = useState<User[] | null>(null);
 
   const getUsers = async () => {
-    const { data } = await axios.get("/users");
+    const { data } = await axios.get("/api/users");
     setUsers(data);
   };
 
@@ -20,7 +20,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (user?.role === "ADMIN") {
+    if (user?.role === "admin") {
       getUsers();
     }
   }, [user]);

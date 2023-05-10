@@ -13,12 +13,10 @@ export default function UsersTable({
 }) {
   const { user: usr } = useAuth();
 
-  const deleteUser = async (username: string) => {
-    await axios.delete("/users", {
-      data: { username },
-    });
+  const deleteUser = async (id: string) => {
+    await axios.delete(`/api/users/${id}`);
     if (users) {
-      updateUsers(users.filter((user) => user.username !== username));
+      updateUsers(users.filter((user) => user.id !== id));
     }
   };
 
@@ -39,9 +37,13 @@ export default function UsersTable({
             <tr key={user.id}>
               <td className="text-xs">{user.id}</td>
               <td>{user.username}</td>
-              <td>{user.role}</td>
+              <td>{user.roleName}</td>
               <td className="max-w-lg text-xs">
-                {user.permissions.join(", ")}
+                {user.role?.permissions
+                  .map((p) => {
+                    return p.name;
+                  })
+                  .join(", ")}
               </td>
               <td className="flex gap-1 text-lg font-bold">
                 <span className="cursor-pointer text-orange-400 hover:brightness-125 hover:scale-105 transition">
@@ -50,7 +52,7 @@ export default function UsersTable({
                 <span
                   onClick={
                     user.id !== usr?.userId
-                      ? () => deleteUser(user.username)
+                      ? () => deleteUser(user.id)
                       : undefined
                   }
                   className={`transition ${
