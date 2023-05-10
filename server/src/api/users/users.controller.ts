@@ -6,69 +6,26 @@ import prisma from "../../lib/prisma.js"
 import dotenv from "dotenv"
 dotenv.config()
 
-import { hasPermission, isAdmin } from "../../utils/hasPermission.js"
-
 /**
  * GET - Get all users
  */
 export const getUsers = async (req: Request, res: Response) => {
-  const { user } = req
-
-  if (!user) {
-    return res.status(401).json({
-      msg: "You are not authenticated",
-    })
-  }
-
-  const { role, permissions } = user
-
-  if (!isAdmin(role)) {
-    return res.status(401).json({
-      msg: "Only admins are authorized",
-    })
-  }
-
-  if (!hasPermission("CAN_FETCH", permissions)) {
-    return res.status(401).json({
-      msg: "Only admins with CAN_FETCH permission can perform this request",
-    })
-  }
-
-  const usr = await prisma.user.findMany({ include: { role: { include: { permissions: true } } } }) // SELECT * FROM users
-
-  return res.status(200).json(usr || [])
+  const users = await prisma.user.findMany({
+    include: { role: { include: { permissions: true } } },
+  })
+  return res.status(200).json(users || [])
 }
 
 /**
  * GET - Get user by id
  */
 export const getUser = async (req: Request, res: Response) => {
-  const { user } = req
   const { id } = req.params
-
-  if (!user) {
-    return res.status(401).json({
-      msg: "You are not authenticated",
-    })
-  }
-
-  const { role, permissions } = user
-
-  if (!isAdmin(role)) {
-    return res.status(401).json({
-      msg: "Only admins are authorized",
-    })
-  }
-
-  if (!hasPermission("CAN_FETCH", permissions)) {
-    return res.status(401).json({
-      msg: "Only admins with CAN_FETCH permission can perform this request",
-    })
-  }
-
-  const usr = await prisma.user.findFirst({ where: { id }, include: { role: { include: { permissions: true } } } }) // SELECT * FROM users
-
-  return res.status(200).json(usr || { msg: "user doesn't exists" })
+  const user = await prisma.user.findFirst({
+    where: { id },
+    include: { role: { include: { permissions: true } } },
+  })
+  return res.status(200).json(user || { msg: "user doesn't exists" })
 }
 
 /**
@@ -76,36 +33,16 @@ export const getUser = async (req: Request, res: Response) => {
  */
 export const createUser = async (req: Request, res: Response) => {
   const { username, password, role: roleInsert } = req.body
-  const { user } = req
 
-  if (!user) {
-    return res.status(401).json({
-      msg: "You are not authenticated",
-    })
-  }
-
-  const { role, permissions } = user
-
-  if (!isAdmin(role)) {
-    return res.status(401).json({
-      msg: "Only admins are authorized",
-    })
-  }
-
-  if (!hasPermission("CAN_INSERT", permissions)) {
-    return res.status(401).json({
-      msg: "Only admins with CAN_INSERT permission can perform this request",
-    })
-  }
   try {
-    const usr = await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         username,
         password,
         role: roleInsert,
       },
     })
-    return res.status(200).json(usr)
+    return res.status(200).json(user)
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2002") {
@@ -121,30 +58,9 @@ export const createUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   const { username, password, role: roleInsert } = req.body
   const { id } = req.params
-  const { user } = req
-
-  if (!user) {
-    return res.status(401).json({
-      msg: "You are not authenticated",
-    })
-  }
-
-  const { role, permissions } = user
-
-  if (!isAdmin(role)) {
-    return res.status(401).json({
-      msg: "Only admins are authorized",
-    })
-  }
-
-  if (!hasPermission("CAN_UPDATE", permissions)) {
-    return res.status(401).json({
-      msg: "Only admins with CAN_UPDATE permission can perform this request",
-    })
-  }
 
   try {
-    const usr = await prisma.user.update({
+    const user = await prisma.user.update({
       where: {
         id,
       },
@@ -155,10 +71,10 @@ export const updateUser = async (req: Request, res: Response) => {
       },
     })
 
-    if (!usr?.username) {
-      return res.status(400).json(usr)
+    if (!user?.username) {
+      return res.status(400).json(user)
     }
-    return res.status(200).json(usr)
+    return res.status(200).json(user)
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code) {
@@ -173,36 +89,15 @@ export const updateUser = async (req: Request, res: Response) => {
  */
 export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params
-  const { user } = req
 
-  if (!user) {
-    return res.status(401).json({
-      msg: "You are not authenticated",
-    })
-  }
-
-  const { role, permissions } = user
-
-  if (!isAdmin(role)) {
-    return res.status(401).json({
-      msg: "Only admins are authorized",
-    })
-  }
-
-  if (!hasPermission("CAN_DELETE", permissions)) {
-    return res.status(401).json({
-      msg: "Only admins with CAN_DELETE permission can perform this request",
-    })
-  }
-
-  const usr = await prisma.user.delete({
+  const user = await prisma.user.delete({
     where: {
       id,
     },
-  }) // SELECT * FROM users
+  })
 
-  if (!usr?.username) {
-    return res.status(400).json(usr)
+  if (!user?.username) {
+    return res.status(400).json(user)
   }
-  return res.status(200).json(usr)
+  return res.status(200).json(user)
 }
