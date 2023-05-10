@@ -28,7 +28,9 @@ export const login = async (req: Request, res: Response) => {
   })
 
   if (user) {
-    const pass = CryptoJS.AES.decrypt(user.password, SECRET).toString(CryptoJS.enc.Utf8)
+    const pass = CryptoJS.AES.decrypt(user.password, SECRET).toString(
+      CryptoJS.enc.Utf8
+    )
 
     if (password === pass) {
       const token = jwt.sign(
@@ -87,11 +89,17 @@ export const signup = async (req: Request, res: Response) => {
                 connectOrCreate: [
                   {
                     where: { name: "CAN_READ_PERSONAL_PROFILE" },
-                    create: { name: "CAN_READ_PERSONAL_PROFILE", description: "Can view his profile info" },
+                    create: {
+                      name: "CAN_READ_PERSONAL_PROFILE",
+                      description: "Can view his profile info",
+                    },
                   },
                   {
                     where: { name: "CAN_UPDATE_PERSONAL_PROFILE" },
-                    create: { name: "CAN_UPDATE_PERSONAL_PROFILE", description: "Can update his profile info" },
+                    create: {
+                      name: "CAN_UPDATE_PERSONAL_PROFILE",
+                      description: "Can update his profile info",
+                    },
                   },
                 ],
               },
@@ -124,7 +132,11 @@ export const signup = async (req: Request, res: Response) => {
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2002") {
-        return res.status(400).json({ msg: "There is a unique constraint violation, a new user cannot be created with this username" })
+        return res
+          .status(400)
+          .json({
+            msg: "There is a unique constraint violation, a new user cannot be created with this username",
+          })
       }
     }
   }
