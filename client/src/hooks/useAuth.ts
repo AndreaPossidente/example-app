@@ -3,14 +3,6 @@ import Cookies from "js-cookie";
 import { decodeToken } from "react-jwt";
 import axios from "../api/axios";
 
-interface Session {
-  userId: number;
-  username: string;
-  role: string;
-  permissions: string[];
-  iat: number;
-}
-
 export default function useAuth() {
   const [user, setUser] = useState<Session | null>(null);
   const [error, setError] = useState<string>("");
@@ -28,7 +20,7 @@ export default function useAuth() {
   const login = async (username: string, password: string) => {
     if (username && password) {
       const data = await axios
-        .post("/login", {
+        .post("/api/auth/login", {
           username: username,
           password: password,
         })
@@ -55,7 +47,7 @@ export default function useAuth() {
   const signup = async (username: string, password: string) => {
     if (username && password) {
       const data = await axios
-        .post("/signup", {
+        .post("/api/auth/signup", {
           username: username,
           password: password,
         })

@@ -1,7 +1,17 @@
+type Permission = { name: string; description: string };
+type Role = { name: string; permissions: Permission[] };
 interface User {
-  id: number;
+  id: string;
   username: string;
   password: string;
+  role: Role;
+  roleName: string;
+}
+
+interface Session {
+  userId: string;
+  username: string;
   role: string;
-  permissions: string[];
+  permissions: Permission[];
+  iat: number;
 }

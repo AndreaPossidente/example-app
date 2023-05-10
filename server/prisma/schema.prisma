@@ -11,23 +11,31 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  username    String       @unique
-  password    String
-  role        Role         @default(USER)
-  permissions Permission[] @default([CAN_READ_PERSONAL_PROFILE, CAN_UPDATE_PERSONAL_PROFILE])
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username String @unique
+  password String
+  role     Role   @relation(fields: [roleName], references: [name], onDelete: Cascade)
+  roleName String
+
+  @@map("users")
 }
 
-enum Role {
-  USER
-  ADMIN
+model Permission {
+  name        String @unique
+  description String
+  roles       Role[] @relation("RolesPermissions")
+
+  @@id([name])
+  @@index([name])
+  @@map("permissions")
 }
 
-enum Permission {
-  CAN_DELETE
-  CAN_INSERT
-  CAN_UPDATE
-  CAN_READ_PERSONAL_PROFILE
-  CAN_UPDATE_PERSONAL_PROFILE
-  CAN_FETCH
+model Role {
+  name        String       @unique
+  users       User[]
+  permissions Permission[] @relation("RolesPermissions")
+
+  @@id([name])
+  @@index([name])
+  @@map("roles")
 }
