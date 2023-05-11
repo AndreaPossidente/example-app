@@ -1,9 +1,12 @@
 table.users-table {
   @apply border rounded-lg text-sm;
-  & tr > td {
-    @apply p-1;
+  & tr {
+    @apply even:bg-zinc-100 text-zinc-700;
+    & > td {
+      @apply p-2;
+    }
   }
   & > thead {
-    @apply bg-zinc-100 font-bold text-zinc-600;
+    @apply bg-zinc-200 font-bold text-zinc-700;
   }
 }

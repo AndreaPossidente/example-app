@@ -3,19 +3,21 @@ import Cookies from "js-cookie";
 import { decodeToken } from "react-jwt";
 import axios from "@/api/axios";
 
+import type { RootState } from "../store";
+import { useSelector, useDispatch } from "react-redux";
+import { refresh, reset } from "../store/slices/authSlice";
+
 export default function useAuth() {
-  const [user, setUser] = useState<Session | null>(null);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const dispatch = useDispatch();
+
   const [error, setError] = useState<string>("");
 
+  const token = Cookies.get("jwt");
+
   useEffect(() => {
-    const token = Cookies.get("jwt");
-    if (token) {
-      const user: Session | null = decodeToken(token);
-      if (user) {
-        setUser(user);
-      }
-    }
-  }, []);
+    dispatch(refresh());
+  }, [token]);
 
   const login = async (username: string, password: string) => {
     if (username && password) {
@@ -30,16 +32,10 @@ export default function useAuth() {
         });
 
       if (data["token"]) {
-        const token = Cookies.get("jwt");
-        if (token) {
-          const user: Session | null = decodeToken(token);
-          if (user) {
-            setUser(user);
-          }
-        }
+        dispatch(refresh());
       } else {
         setError(JSON.stringify(data));
-        setUser(null);
+        dispatch(reset());
       }
     }
   };
@@ -61,19 +57,19 @@ export default function useAuth() {
         if (token) {
           const user: Session | null = decodeToken(token);
           if (user) {
-            setUser(user);
+            dispatch(refresh());
           }
         }
       } else {
         setError(JSON.stringify(data));
-        setUser(null);
+        dispatch(reset());
       }
     }
   };
 
   const logout = () => {
     Cookies.remove("jwt");
-    setUser(null);
+    dispatch(reset());
   };
 
   return { user, error, login, signup, logout };

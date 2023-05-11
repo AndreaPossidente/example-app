@@ -19,3 +19,17 @@ button,
 [type="submit"] {
   @apply my-2 mb-2 px-3 py-2 bg-blue-300 font-bold w-full rounded-lg;
 }
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-400 transition-all duration-300;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-500;
+}

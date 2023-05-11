@@ -13,7 +13,7 @@ export default function Auth({ variant = "login" }: AuthProps) {
 
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate("/admin");
     }
   }, [user, navigate]);
 

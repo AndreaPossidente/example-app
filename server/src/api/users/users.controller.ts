@@ -11,6 +11,7 @@ dotenv.config()
  */
 const getUsers = async (req: Request, res: Response) => {
   const users = await prisma.user.findMany({
+    orderBy: { id: "asc" },
     include: { role: { include: { permissions: true } } },
   })
   return res.status(200).json(users || [])

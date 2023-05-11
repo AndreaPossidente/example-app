@@ -10,19 +10,28 @@ export default function UsersTable({
   updateUsers,
 }: {
   users: User[] | null;
-  updateUsers: (data: User[]) => Promise<void>;
+  updateUsers: () => Promise<void>;
 }) {
   const { user: usr } = useAuth();
 
   const deleteUser = async (id: string) => {
     await axios.delete(`/api/users/${id}`);
     if (users) {
-      updateUsers(users.filter((user) => user.id !== id));
+      updateUsers();
+    }
+  };
+
+  const updateUser = async (user: User) => {
+    await axios.put(`/api/users/${user.id}`, {
+      role: user.roleName === "admin" ? "user" : "admin",
+    });
+    if (users) {
+      updateUsers();
     }
   };
 
   return (
-    <table className="users-table">
+    <table className="users-table w-full">
       <thead>
         <tr>
           <td>Id</td>
@@ -36,7 +45,7 @@ export default function UsersTable({
         {users &&
           users.map((user) => (
             <tr key={user.id}>
-              <td className="text-xs">{user.id}</td>
+              <td>{user.id}</td>
               <td>{user.username}</td>
               <td>{user.roleName}</td>
               <td className="max-w-lg text-xs">
@@ -47,7 +56,12 @@ export default function UsersTable({
                   .join(", ")}
               </td>
               <td className="flex gap-1 text-lg font-bold">
-                <span className="cursor-pointer text-orange-400 hover:brightness-125 hover:scale-105 transition">
+                <span
+                  onClick={
+                    user.id !== usr?.userId ? () => updateUser(user) : undefined
+                  }
+                  className="cursor-pointer text-orange-400 hover:brightness-125 hover:scale-105 transition"
+                >
                   <TbEdit />
                 </span>
                 <span
