@@ -23,3 +23,6 @@ main()
     await prisma.$disconnect()
     process.exit(1)
   })
+
+  // npx prisma db seed -> crea questo utente
+  // dentro seed si mettono le cose che vogliamo all'inizio nel db - si usa per provare e per crea un amministratore se serve

@@ -11,7 +11,7 @@ import CryptoJS from "crypto-js"
 import { Prisma, PrismaClient } from "@prisma/client"
 import { authMiddleware } from "./middlewares/authMiddleware.js"
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient() // client di prisma - comunica con il db
 
 dotenv.config()
 
@@ -20,12 +20,12 @@ const { SERVER_PORT, SECRET = "" } = process.env
 const app = express()
 
 app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
+  cors({ // i cors servono x la sicurezza
+    origin: "http://localhost:5173", // solo questo indirizzo può accedere all'api e fare richieste
+    credentials: true, // quando mando un cookie e voglio che venga passato a ogni richiesta - quando faccio la fetch devo abilitare le richieste e lui passa ogni richiesta
   })
 )
-app.use(cookieParser())
+app.use(cookieParser()) // serve x leggere i cookie
 app.use(express.json())
 app.use(morgan("dev"))
 
@@ -37,21 +37,19 @@ interface User {
 }
 app.get("/users", authMiddleware, async (req, res) => {
   // @ts-ignore
-  const {
-    user,
-  }: {
-    user: User,
+  const { user }: { // sulla req c'è lo user
+  user: User,
   } = req
-  const { role, permissions } = user
+  const { role, permissions } = user // user contiene ruolo e permessi
 
   if (role !== "ADMIN") {
     res.status(401).json({
       msg: "Only admins are authorized",
     })
-    return
+    return // tutto quello dopo non lo fa
   }
 
-  if (!permissions.find((p) => p === "CAN_FETCH")) {
+  if (!permissions.find((p) => p === "CAN_FETCH")) { // se non c'è il permesso CAN_FETCH
     res.status(401).json({
       msg: "Only admins with CAN_FETCH permission can perform this request",
     })
@@ -64,7 +62,7 @@ app.get("/users", authMiddleware, async (req, res) => {
 })
 
 app.post("/users", authMiddleware, async (req, res) => {
-  const { username, password, role: roleInsert, permissions: permissionsInsert } = req.body
+  const { username, password, role: roleInsert, permissions: permissionsInsert } = req.body // x creare un nuovo utente
   // @ts-ignore
   const {
     user,
@@ -87,7 +85,7 @@ app.post("/users", authMiddleware, async (req, res) => {
     return
   }
   try {
-    const usr = await prisma.user.create({
+    const usr = await prisma.user.create({ // crea l'utente nuovo
       data: {
         username,
         password,
@@ -95,7 +93,7 @@ app.post("/users", authMiddleware, async (req, res) => {
         permissions: permissionsInsert,
       },
     }) // SELECT * FROM users
-    res.status(200).json
+    res.status(200).json(usr)
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2002") {
@@ -203,7 +201,7 @@ app.post("/signup", async (req, res) => {
         password: hashedPassword,
       },
     })
-    const token = jwt.sign(
+    const token = jwt.sign( // dopo la registrazione crea il jwt e lo manda nei cookie così il client lo può vedere
       {
         userId: user.id,
         username: user.username,
@@ -212,7 +210,7 @@ app.post("/signup", async (req, res) => {
       },
       SECRET
     )
-    res.cookie("jwt", token, {
+    res.cookie("jwt", token, { // crea un nuovo cookie e manda la client un header (setCookie) che imposta il cookie - il valore è jwt
       // httpOnly: true,
       // secure: true,
     })
@@ -239,17 +237,17 @@ app.post("/login", async (req, res) => {
     return
   }
 
-  const user = await prisma.user.findFirst({
+  const user = await prisma.user.findFirst({ // se c'è l'utente lo salva in user
     where: {
       username,
     },
   })
 
   if (user) {
-    const pass = CryptoJS.AES.decrypt(user.password, SECRET).toString(CryptoJS.enc.Utf8)
+    const pass = CryptoJS.AES.decrypt(user.password, SECRET).toString(CryptoJS.enc.Utf8) // decripta la pass e la compara con quella del body
 
     if (password === pass) {
-      const token = jwt.sign(
+      const token = jwt.sign( // se pass uguale crea il token e lo manda al cliente come cookie
         {
           userId: user.id,
           username: user.username,

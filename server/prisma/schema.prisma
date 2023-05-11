@@ -23,11 +23,13 @@ enum Role {
   ADMIN
 }
 
+// tutti i permessi che si possono assegnare agli utenti
+// i ruoli devono essere in una tabelle e i permessi devono essere assegnati a seconda del ruolo
 enum Permission {
   CAN_DELETE
   CAN_INSERT
   CAN_UPDATE
   CAN_READ_PERSONAL_PROFILE
   CAN_UPDATE_PERSONAL_PROFILE
-  CAN_FETCH
+  CAN_FETCH // può vedere i dati
 }
