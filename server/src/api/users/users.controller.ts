@@ -1,7 +1,7 @@
 import type { Request, Response } from "express"
 
 import { Prisma } from "@prisma/client"
-import prisma from "../../lib/prisma.js"
+import prisma from "@lib/prisma.js"
 
 import dotenv from "dotenv"
 dotenv.config()
@@ -9,7 +9,7 @@ dotenv.config()
 /**
  * GET - Get all users
  */
-export const getUsers = async (req: Request, res: Response) => {
+const getUsers = async (req: Request, res: Response) => {
   const users = await prisma.user.findMany({
     include: { role: { include: { permissions: true } } },
   })
@@ -19,7 +19,7 @@ export const getUsers = async (req: Request, res: Response) => {
 /**
  * GET - Get user by id
  */
-export const getUser = async (req: Request, res: Response) => {
+const getUser = async (req: Request, res: Response) => {
   const { id } = req.params
   const user = await prisma.user.findFirst({
     where: { id },
@@ -31,7 +31,7 @@ export const getUser = async (req: Request, res: Response) => {
 /**
  * POST - Create a new user
  */
-export const createUser = async (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response) => {
   const { username, password, role: roleInsert } = req.body
 
   try {
@@ -55,7 +55,7 @@ export const createUser = async (req: Request, res: Response) => {
 /**
  * PUT - Update user by id
  */
-export const updateUser = async (req: Request, res: Response) => {
+const updateUser = async (req: Request, res: Response) => {
   const { username, password, role: roleInsert } = req.body
   const { id } = req.params
 
@@ -87,7 +87,7 @@ export const updateUser = async (req: Request, res: Response) => {
 /**
  * DELETE - Delete user by id
  */
-export const deleteUser = async (req: Request, res: Response) => {
+const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params
 
   const user = await prisma.user.delete({
@@ -101,3 +101,5 @@ export const deleteUser = async (req: Request, res: Response) => {
   }
   return res.status(200).json(user)
 }
+
+export default { getUsers, getUser, createUser, updateUser, deleteUser }

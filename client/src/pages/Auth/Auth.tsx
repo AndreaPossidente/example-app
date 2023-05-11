@@ -1,10 +1,14 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
-import useInput from "../hooks/useInput";
+import useAuth from "@hooks/useAuth";
+import useInput from "@hooks/useInput";
 
-export default function Login() {
-  const { login, error, user } = useAuth();
+interface AuthProps {
+  variant: "login" | "signup";
+}
+
+export default function Auth({ variant = "login" }: AuthProps) {
+  const { login, signup, error, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,7 +24,9 @@ export default function Login() {
     <div className="flex justify-center items-center h-screen">
       {!user && (
         <div className="flex flex-col justify-center items-center gap-2 w-2xl">
-          <h1 className="text-2xl font-bold mb-4">Accedi</h1>
+          <h1 className="text-2xl font-bold mb-4">
+            {variant === "login" ? "Login" : "Sign Up"}
+          </h1>
           <input
             className="w-full"
             name="username"
@@ -38,15 +44,33 @@ export default function Login() {
             value={password}
           />
           {error && <div className="my-2 text-sm text-red-500">{error}</div>}
-          <button type="submit" onClick={() => login(username, password)}>
-            Login
+          <button
+            type="submit"
+            onClick={() =>
+              variant === "login"
+                ? login(username, password)
+                : signup(username, password)
+            }
+          >
+            {variant === "login" ? "Login" : "Sign Up"}
           </button>
 
           <span className="text-sm">
-            Don't have an account yet?{" "}
-            <Link to="/signup" className="font-bold text-blue-800">
-              Sign Up
-            </Link>
+            {variant === "login" ? (
+              <>
+                Don't have an account yet?{" "}
+                <Link to="/signup" className="font-bold text-blue-800">
+                  Sign Up
+                </Link>
+              </>
+            ) : (
+              <>
+                Already have an account?{" "}
+                <Link to="/login" className="font-bold text-blue-800">
+                  Login
+                </Link>
+              </>
+            )}
           </span>
         </div>
       )}

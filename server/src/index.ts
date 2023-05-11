@@ -7,8 +7,8 @@ import cookieParser from "cookie-parser"
 import dotenv from "dotenv"
 dotenv.config()
 
-import authRouter from "./api/auth/auth.router.js"
-import usersRouter from "./api/users/users.router.js"
+import authRouter from "@api/auth/auth.router.js"
+import usersRouter from "@api/users/users.router.js"
 
 const { SERVER_PORT } = process.env
 

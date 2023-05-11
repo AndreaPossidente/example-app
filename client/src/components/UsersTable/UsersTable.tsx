@@ -1,8 +1,9 @@
-import "./UsersTable.scss";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline } from "react-icons/md";
-import useAuth from "../../hooks/useAuth";
-import axios from "../../api/axios";
+import useAuth from "@hooks/useAuth";
+import axios from "@/api/axios";
+
+import "./UsersTable.scss";
 
 export default function UsersTable({
   users,

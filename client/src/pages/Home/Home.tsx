@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
 import { useEffect, useState } from "react";
-import UsersTable from "./UsersTable/UsersTable";
-import axios from "../api/axios";
+import { Link } from "react-router-dom";
+import axios from "@/api/axios";
+
+import UsersTable from "@components/UsersTable";
+import useAuth from "@hooks/useAuth";
 
 export default function Home() {
   const { user, logout } = useAuth();

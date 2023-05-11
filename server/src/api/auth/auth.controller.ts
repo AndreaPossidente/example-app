@@ -1,7 +1,7 @@
 import type { Request, Response } from "express"
 
 import { Prisma } from "@prisma/client"
-import prisma from "../../lib/prisma.js"
+import prisma from "@lib/prisma.js"
 
 import CryptoJS from "crypto-js"
 import jwt from "jsonwebtoken"
@@ -11,7 +11,7 @@ dotenv.config()
 
 const { SECRET = "" } = process.env
 
-export const login = async (req: Request, res: Response) => {
+const login = async (req: Request, res: Response) => {
   const { username, password } = req.body
 
   if (!username || !password) {
@@ -28,9 +28,7 @@ export const login = async (req: Request, res: Response) => {
   })
 
   if (user) {
-    const pass = CryptoJS.AES.decrypt(user.password, SECRET).toString(
-      CryptoJS.enc.Utf8
-    )
+    const pass = CryptoJS.AES.decrypt(user.password, SECRET).toString(CryptoJS.enc.Utf8)
 
     if (password === pass) {
       const token = jwt.sign(
@@ -64,7 +62,7 @@ export const login = async (req: Request, res: Response) => {
   }
 }
 
-export const signup = async (req: Request, res: Response) => {
+const signup = async (req: Request, res: Response) => {
   const { username, password } = req.body
 
   if (!username || !password) {
@@ -132,12 +130,12 @@ export const signup = async (req: Request, res: Response) => {
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2002") {
-        return res
-          .status(400)
-          .json({
-            msg: "There is a unique constraint violation, a new user cannot be created with this username",
-          })
+        return res.status(400).json({
+          msg: "There is a unique constraint violation, a new user cannot be created with this username",
+        })
       }
     }
   }
 }
+
+export default { login, signup }

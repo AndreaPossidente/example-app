@@ -1,6 +1,6 @@
 import express from "express"
-import { auth, hasPermissions, hasRoles } from "../../middlewares/auth.middleware.js"
-import * as usersController from "./users.controller.js"
+import { auth, hasPermissions, hasRoles } from "@middlewares/auth.middleware.js"
+import usersController from "./users.controller.js"
 
 const router = express.Router()
 

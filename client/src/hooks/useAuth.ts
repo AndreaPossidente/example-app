@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { decodeToken } from "react-jwt";
-import axios from "../api/axios";
+import axios from "@/api/axios";
 
 export default function useAuth() {
   const [user, setUser] = useState<Session | null>(null);
