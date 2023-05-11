@@ -9,6 +9,7 @@ dotenv.config()
 
 import authRouter from "@api/auth/auth.router.js"
 import usersRouter from "@api/users/users.router.js"
+import rolesRouter from "@api/roles/roles.router.js"
 
 const { SERVER_PORT } = process.env
 
@@ -26,6 +27,7 @@ app.use(morgan("dev"))
 
 app.use("/api/auth", authRouter)
 app.use("/api", usersRouter)
+app.use("/api", rolesRouter)
 
 app.listen(SERVER_PORT, () => {
   console.log(`Server listening on http://localhost:${SERVER_PORT}`)
